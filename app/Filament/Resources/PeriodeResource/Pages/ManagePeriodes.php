@@ -16,4 +16,9 @@ class ManagePeriodes extends ManageRecords
             Actions\CreateAction::make(),
         ];
     }
+
+    public function getTitle(): string
+    {
+      return "Periode";
+    }
 }
