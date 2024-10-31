@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\TeacherResource\Pages;
 use App\Filament\Resources\TeacherResource\RelationManagers;
+use App\Filament\Resources\TeacherResource\RelationManagers\ClassroomRelationManager;
 use App\Models\Teacher;
 use Filament\Forms;
 use Filament\Forms\Components\FileUpload;
@@ -32,18 +33,18 @@ class TeacherResource extends Resource
         return $form
             ->schema([
                 Section::make()
-                  ->schema([
-                    TextInput::make('nip')
-                      ->columnSpan(1),
-                    TextInput::make('name')
-                      ->required()
-                      ->columnSpan(1),
-                    Textarea::make('address')
-                      ->columnSpan(2),
-                    FileUpload::make('profile')
-                      ->directory('teachers')
-                      ->columnSpan(2)
-                  ])->columns(2)
+                    ->schema([
+                        TextInput::make('nip')
+                            ->columnSpan(1),
+                        TextInput::make('name')
+                            ->required()
+                            ->columnSpan(1),
+                        Textarea::make('address')
+                            ->columnSpan(2),
+                        FileUpload::make('profile')
+                            ->directory('teachers')
+                            ->columnSpan(2)
+                    ])->columns(2)
             ]);
     }
 
@@ -54,7 +55,7 @@ class TeacherResource extends Resource
                 TextColumn::make('nip'),
                 TextColumn::make('name'),
                 TextColumn::make('address')
-                  ->toggleable(),
+                    ->toggleable(),
                 ImageColumn::make('profile')
             ])
             ->filters([
@@ -73,7 +74,7 @@ class TeacherResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            ClassroomRelationManager::class,
         ];
     }
 
