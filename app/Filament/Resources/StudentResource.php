@@ -19,88 +19,103 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Tables\Contracts\HasTable;
+use stdClass;
 
 class StudentResource extends Resource
 {
-    protected static ?string $model = Student::class;
+  protected static ?string $model = Student::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+  protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    public static function form(Form $form): Form
-    {
-        return $form
-            ->schema([
-                Section::make()
-                ->schema([
-                  TextInput::make('nis')
-                    ->label('NIS'),
-                  TextInput::make('name')
-                    ->label('Nama')
-                    ->required(),
+  public static function form(Form $form): Form
+  {
+    return $form
+      ->schema([
+        Section::make()
+          ->schema([
+            TextInput::make('nis')
+              ->label('NIS'),
+            TextInput::make('name')
+              ->label('Nama')
+              ->required(),
 
-                  Select::make('gender')
-                    ->label('Gender')
-                    ->options([
-                      "Male" => "Male",
-                      "Female" => "Female",
-                    ]),
-                  DatePicker::make('birthday')
-                    ->maxDate(now()),
-                  Select::make('religion')
-                    ->options([
-                      "Islam" => "Islam",
-                      "Katolik" => "Katolik",
-                      "Protestan" => "Protestan",
-                      "Hindu" => "Hindu",
-                      "Budhha" => "Budhha",
-                      "Khonghucu" => "Khonghucu",
-                    ]),
-                  TextInput::make('contact'),
-                  FileUpload::make('profile')
-                    ->directory('students')
-                    ->columnSpan(2),
-                ])->columns(2)
-            ]);
-    }
+            Select::make('gender')
+              ->label('Gender')
+              ->options([
+                "Male" => "Male",
+                "Female" => "Female",
+              ]),
+            DatePicker::make('birthday')
+              ->maxDate(now()),
+            Select::make('religion')
+              ->options([
+                "Islam" => "Islam",
+                "Katolik" => "Katolik",
+                "Protestan" => "Protestan",
+                "Hindu" => "Hindu",
+                "Budhha" => "Budhha",
+                "Khonghucu" => "Khonghucu",
+              ]),
+            TextInput::make('contact'),
+            FileUpload::make('profile')
+              ->directory('students')
+              ->columnSpan(2),
+          ])->columns(2)
+      ]);
+  }
 
-    public static function table(Table $table): Table
-    {
-        return $table
-            ->columns([
-                TextColumn::make('nis')
-                  ->label('NIS'),
-                TextColumn::make('name')
-                  ->label('Nama'),
-                TextColumn::make('gender'),
-                TextColumn::make('birthday'),
-                ImageColumn::make('profile'),
-            ])
-            ->filters([
-                //
-            ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
-    }
+  public static function table(Table $table): Table
+  {
+    return $table
+      ->columns([
+        // indexing atau penomoran
+        TextColumn::make('No')->state(
+          static function (HasTable $livewire, stdClass $rowLoop): string {
+            return (string) (
+              $rowLoop->iteration +
+              ($livewire->getTableRecordsPerPage() * (
+                $livewire->getTablePage() - 1
+              ))
+            );
+          }
+        ),
+        TextColumn::make('nis')
+          ->label('NIS'),
+        TextColumn::make('name')
+          ->label('Nama'),
+        TextColumn::make('gender'),
+        TextColumn::make('birthday'),
+        TextColumn::make('religion'),
+        TextColumn::make('contact'),
+        ImageColumn::make('profile'),
+      ])
+      ->filters([
+        //
+      ])
+      ->actions([
+        Tables\Actions\EditAction::make(),
+      ])
+      ->bulkActions([
+        Tables\Actions\BulkActionGroup::make([
+          Tables\Actions\DeleteBulkAction::make(),
+        ]),
+      ]);
+  }
 
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
-    }
+  public static function getRelations(): array
+  {
+    return [
+      //
+    ];
+  }
 
-    public static function getPages(): array
-    {
-        return [
-            'index' => Pages\ListStudents::route('/'),
-            'create' => Pages\CreateStudent::route('/create'),
-            'edit' => Pages\EditStudent::route('/{record}/edit'),
-        ];
-    }
+  public static function getPages(): array
+  {
+    return [
+      'index' => Pages\ListStudents::route('/'),
+      'create' => Pages\CreateStudent::route('/create'),
+      'edit' => Pages\EditStudent::route('/{record}/edit'),
+    ];
+  }
 }
